@@ -1,0 +1,59 @@
+# A: Full VLS-YOLO without MDCR; restore SPPF at P5
+# Backbone: C2f_LS + CAFMAttention
+# Head: BiFPN-style (WeightedAdd) + VSSBlockLite (MODIFIED)
+
+nc: 6 # number of classes
+scales: 
+  n: [1.00, 0.25, 1024] 
+w_bifpn: &w_bifpn 256 # Define anchor for bifpn width
+
+# YOLOv8.0n backbone (Identical to M2/M3)
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]]    # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]   # 1-P2/4
+  - [-1, 3, C2f_LS, [128, 0.5, 'parallel']]  # 2.
+  - [-1, 1, Conv, [256, 3, 2]]   # 3-P3/8
+  - [-1, 6, C2f_LS, [256, 0.5, 'parallel']]  # 4.
+  - [-1, 1, Conv, [512, 3, 2]]   # 5-P4/16
+  - [-1, 6, C2f_LS, [512, 0.5, 'parallel']]  # 6.
+  - [-1, 1, Conv, [1024, 3, 2]]  # 7-P5/32
+  - [-1, 6, C2f_LS, [1024, 0.5, 'parallel']] # 8.
+  - [-1, 1, SPPF, [1024, 5]]     # 9
+  - [-1, 3, CAFMAttention, [1024]] # 10.
+
+# YOLOv8.0n head (Your Final Version)
+head:
+  # ---------------------------------------------------------------------
+  # 1) 统一通道数 (1x1 conv)
+  - [4, 1, Conv, [*w_bifpn, 1, 1]]  # 11. P3_in (from layer 4)
+  - [6, 1, Conv, [*w_bifpn, 1, 1]]  # 12. P4_in (from layer 6)
+  - [10, 1, Conv, [*w_bifpn, 1, 1]] # 13. P5_in (from layer 10)
+
+  # ---------------------------------------------------------------------
+  # 2) Top-Down path
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]  # 14. P5_in -> P5_up
+  - [[12, 14], 1, WeightedAdd, [2]]             # 15. P4_td
+  - [-1, 1, Conv, [*w_bifpn, 3, 1]]             # 16. Conv on P4_td
+  - [-1, 3, VSSBlockLite, [*w_bifpn]]           # 17. MODIFIED (Refine with VSS)
+
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]  # 18. P4_td -> P4_td_up
+  - [[11, 18], 1, WeightedAdd, [2]]             # 19. P3_out
+  - [-1, 1, Conv, [*w_bifpn, 3, 1]]             # 20. Conv on P3_out
+  - [-1, 3, VSSBlockLite, [*w_bifpn]]           # 21. MODIFIED (Refine with VSS)
+
+  # ---------------------------------------------------------------------
+  # 3) Bottom-Up path
+  - [-1, 1, Conv, [*w_bifpn, 3, 2]]             # 22. P3_out -> downsample
+  - [[12, 17, 22], 1, WeightedAdd, [3]]         # 23. P4_out
+  - [-1, 1, Conv, [*w_bifpn, 3, 1]]             # 24. Conv on P4_out
+  - [-1, 3, VSSBlockLite, [*w_bifpn]]           # 25. MODIFIED (Refine with VSS)
+
+  - [-1, 1, Conv, [*w_bifpn, 3, 2]]             # 26. P4_out -> downsample
+  - [[13, 26], 1, WeightedAdd, [2]]             # 27. P5_out
+  - [-1, 1, Conv, [*w_bifpn, 3, 1]]             # 28. Conv on P5_out
+  - [-1, 3, VSSBlockLite, [*w_bifpn]]           # 29. MODIFIED (Refine with VSS)
+
+  # ---------------------------------------------------------------------
+  # 4) Detect head
+  - [[21, 25, 29], 1, Detect, [nc]] # 30

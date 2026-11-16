@@ -1,0 +1,16 @@
+*.deb
+*.zip
+*.tar.gz
+*.rar
+selective_scan/build/
+selective_scan/*.egg-info/
+build/
+*.egg-info/
+*.so
+*.o
+**/last.pt
+output_dir/**/*.pt
+!output_dir/ablation/M5/seed0/weights/best.pt
+__pycache__/
+*.pyc
+wandb/

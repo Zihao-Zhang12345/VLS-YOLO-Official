@@ -1,0 +1,62 @@
+# VLS-YOLO — curated Python dependencies from the mambayolo Conda environment
+# Environment: Linux, Python 3.11.13, PyTorch 2.3.0, CUDA 12.1, cuDNN 8.9.2
+# This is a pip requirements file, NOT an exact Conda/system/CUDA environment lock.
+# For the matching CUDA 12.1 PyTorch wheels, see the installation note in README.
+
+# Deep learning and object detection
+torch==2.3.0
+torchvision==0.18.0
+torchaudio==2.3.0
+ultralytics==8.2.29
+ultralytics-thop==2.0.17
+
+# Data processing and visualization
+numpy==2.0.1
+opencv-python==4.12.0.88
+Pillow==11.3.0
+PyYAML==6.0.2
+scipy==1.16.2
+pandas==2.3.2
+matplotlib==3.10.6
+seaborn==0.13.2
+scikit-learn==1.8.0
+tqdm==4.67.1
+psutil==7.0.0
+
+# Model architecture and analysis
+einops==0.8.1
+timm==0.9.12
+efficientnet-pytorch==0.7.1
+thop==0.1.1-2209072238
+torchinfo==1.8.0
+torchsummary==1.5.1
+ninja==1.13.0
+packaging==25.0
+huggingface-hub==0.34.4
+safetensors==0.6.2
+
+# ONNX export and evaluation
+onnx==1.21.0
+onnxruntime==1.26.0
+protobuf==7.34.1
+flatbuffers==25.12.19
+
+# Hyperparameter optimization and experiment logging
+optuna==4.6.0
+optuna-dashboard==0.20.0
+SQLAlchemy==2.0.44
+
+# Grad-CAM visualization
+grad-cam==1.5.7
+ttach==0.0.3
+PyWavelets==1.9.0
+
+# Installed in the original environment, but requires matching CUDA/C++ source
+# or a compatible prebuilt wheel; do not assume a public pip package is equivalent:
+# selective-scan==0.0.2
+
+# The original environment also listed opencv-python-headless==5.0.0.93,
+# but opencv-python and opencv-python-headless should not be installed together.
+# This file retains opencv-python only.
+# TPU-MLIR (conversion Docker) and Sophon SAIL (AirBox runtime) are separate
+# environments and intentionally are not included here.

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "/home/zzh/projects/VLS-YOLO/output_dir/5-seeds-v8/NEU-12-1-s_paper_SGD-v8_seed2/weights/best.pt",
+    "precision_setting": "keep",
+    "original_tensor_dtype": "torch.float16",
+    "original_mb": 5.9801,
+    "compact_mb": 5.9546,
+    "saved_pct": 0.43,
+    "checkpoint_keys": [
+      "model"
+    ],
+    "inference_test": "passed"
+  },
+  {
+    "file": "/home/zzh/projects/VLS-YOLO/output_dir/5-seeds-v8/NEU-12-1-s_paper_SGD-v8_seed2/weights/last.pt",
+    "precision_setting": "keep",
+    "original_tensor_dtype": "torch.float16",
+    "original_mb": 5.9939,
+    "compact_mb": 5.9546,
+    "saved_pct": 0.66,
+    "checkpoint_keys": [
+      "model"
+    ],
+    "inference_test": "passed"
+  }
+]
